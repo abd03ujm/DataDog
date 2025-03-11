@@ -19,3 +19,25 @@ curl -X POST "https://http-intake.logs.datadoghq.com/v1/input" \
   "ddsource": "system-metrics"
 }
 EOF
+```
+#!/bin/bash
+
+# Extract system info
+OS_VERSION=$(awk -F= '/^PRETTY_NAME/ {print $2}' /etc/os-release | tr -d '"')
+NODE_VERSION=$(node -v)
+
+# Create a temporary JSON file
+TEMP_JSON="temp_data.json"
+
+# Replace placeholders with actual values
+jq --arg os "$OS_VERSION" --arg node "$NODE_VERSION" \
+    '.os_version = $os | .node_version = $node' data.json > $TEMP_JSON
+
+# Send data to Datadog
+curl -X POST "https://http-intake.logs.datadoghq.com/v1/input" \
+     -H "Content-Type: application/json" \
+     -H "DD-API-KEY: YOUR_DATADOG_API_KEY" \
+     -d @"$TEMP_JSON"
+
+# Clean up temp file
+rm -f "$TEMP_JSON"
