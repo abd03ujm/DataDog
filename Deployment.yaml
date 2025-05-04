@@ -1,46 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: public-nodejs-app
-  labels:
-    app: public-nodejs-app
-    tags.datadoghq.com/service: public-nodejs-app
-    tags.datadoghq.com/env: production
-    tags.datadoghq.com/team: backend
-    tags.datadoghq.com/image_tag: bitnami-node-18      # <-- Image Tag
-    tags.datadoghq.com/node_version: "18"              # <-- Node.js Version
+  name: my-app-jay
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: public-nodejs-app
+      app: my-app-jay
   template:
     metadata:
       labels:
-        app: public-nodejs-app
-        tags.datadoghq.com/service: public-nodejs-app
-        tags.datadoghq.com/env: production
-        tags.datadoghq.com/team: backend
-        tags.datadoghq.com/image_tag: bitnami-node-18    # <-- Image Tag (labels)
-        tags.datadoghq.com/node_version: "18"            # <-- Node.js Version (labels)
+        app: my-app-jay
       annotations:
-        ad.datadoghq.com/public-nodejs-app.logs: '[{"source":"nodejs","service":"public-nodejs-app","tags":["env:production","team:backend","image_tag:bitnami-node-18","node_version:18"]}]'
+        os.arch: alpine
+        os.version: "3.20"
+        middleware.name: nodejs
+        middleware.version: "18.17.1"
     spec:
       containers:
-        - name: public-nodejs-app
-          image: bitnami/node:18  # <-- Public Node.js image (with tag)
-          command: ["node"]
-          args: ["-e", "require('http').createServer((req, res) => res.end('Hello from public Node.js image!')).listen(3000)"]
-          ports:
-            - containerPort: 3000
-          env:
-            - name: DD_ENV
-              value: production
-            - name: DD_SERVICE
-              value: public-nodejs-app
-            - name: DD_VERSION
-              value: v1
-            - name: IMAGE_TAG
-              value: "bitnami/node:18"         # <-- Image Tag as ENV
-            - name: NODE_VERSION
-              value: "18"                     # <-- Node.js version as ENV
+      - name:  my-app-jay-container
+        image: nginx
